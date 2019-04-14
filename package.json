@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension-translate",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Translate messages in the _locales directory from the default_language to other languages in the _locales directory or locales listed as arguments to the command.",
   "bin": {
     "chrome-extension-translate": "./bin/index.js"
@@ -12,5 +12,14 @@
     "commander": "^2.19.0",
     "google-translate": "^2.2.0",
     "trash": "^5.0.0"
+  },
+  "homepage": "https://github.com/LesterGallagher/chrome-extension-translate",
+  "bugs": {
+    "url": "https://github.com/LesterGallagher/chrome-extension-translate/issues",
+    "email": "chrome-extension-translate@esstudio.site"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LesterGallagher/chrome-extension-translate"
   }
 }
