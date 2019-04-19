@@ -47,7 +47,7 @@ program
                     translations[i][key] = { message: messages[key] };
                 });
             }
-            const keys = Object.keys(defaultLocaleMessages).filter(key => key in translations === false);
+            const keys = Object.keys(defaultLocaleMessages).filter(key => key in translations[i] === false);
             (await translate(keys.map(x =>
                 defaultLocaleMessages[x].message), defaultLocale, locales[i]
             )).forEach((message, j) => {

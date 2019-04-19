@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension-translate",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Translate messages in the _locales directory from the default_language to other languages in the _locales directory or locales listed as arguments to the command.",
   "bin": {
     "chrome-extension-translate": "./bin/index.js"
