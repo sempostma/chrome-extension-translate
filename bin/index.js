@@ -5,10 +5,12 @@ const fs = require('fs');
 const trash = require('trash');
 const path = require('path');
 const googleTranslateFactory = require('google-translate');
+const package = require('../package.json');
 
 program
-    .version('0.1.0')
-    .command('chrome-extension-translate <api_key> [locales...]')
+    .name('chrome-extension-translate')
+    .version(package.version)
+    .arguments('<api_key> [locales...]')
     .action(async function (apiKey, extraLocales) {
         extraLocales = extraLocales || [];
         const dir = process.cwd();
@@ -40,19 +42,23 @@ program
 
         const translations = new Array(locales.length);
         for (let i = 0; i < translations.length; i++) {
+            const locale = locales[i];
             translations[i] = {};
-            if (fs.existsSync(path.join(__dirname, '_locales', locale, 'messages.json'))) {
-                const messages = require(path.join(__dirname, '_locales', locale, 'messages.json'));
+            
+            if (fs.existsSync(path.join(dir, '_locales', locale, 'messages.json'))) {
+                const messages =  JSON.parse(fs.readFileSync(path.join(dir, '_locales', locale, 'messages.json')));
                 Object.keys(messages).forEach(key => {
-                    translations[i][key] = { message: messages[key] };
+                    translations[i][key] = { message: messages[key].message };
                 });
             }
-            const keys = Object.keys(defaultLocaleMessages).filter(key => key in translations[i] === false);
-            (await translate(keys.map(x =>
+            const keys = Object.keys(defaultLocaleMessages).filter(key => !translations[i][key]);
+            if (keys.length > 0) {
+                (await translate(keys.map(x =>
                 defaultLocaleMessages[x].message), defaultLocale, locales[i]
-            )).forEach((message, j) => {
-                translations[i][keys[j]] = { message };
-            });
+                )).forEach((message, j) => {
+                    translations[i][keys[j]] = { message };
+                });
+            }
         }
 
         const messagesFiles = locales.map(locale => path.join(dir, '_locales', locale, 'messages.json'));
