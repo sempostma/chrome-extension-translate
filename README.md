@@ -2,6 +2,14 @@
 
 Translate messages in the _locales directory from the default_language to other languages in the _locales directory or locales listed as arguments to the command.
 
+## Installation
+
+Please install as a global dependency or use it via npx or any other way you like.
+
+```bash
+npm i -g chrome-extension-translate # do not forget the global (-g) flag
+```
+
 ## Usage
 
 ```bash
