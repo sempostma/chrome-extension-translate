@@ -44,19 +44,28 @@ program
         for (let i = 0; i < translations.length; i++) {
             const locale = locales[i];
             translations[i] = {};
+
+            Object.keys(defaultLocaleMessages).forEach(key => {
+                translations[i][key] = { ...defaultLocaleMessages[key] }
+            })
             
             if (fs.existsSync(path.join(dir, '_locales', locale, 'messages.json'))) {
                 const messages =  JSON.parse(fs.readFileSync(path.join(dir, '_locales', locale, 'messages.json')));
                 Object.keys(messages).forEach(key => {
-                    translations[i][key] = { message: messages[key].message };
+                    translations[i][key].message = messages[key].message;
                 });
             }
-            const keys = Object.keys(defaultLocaleMessages).filter(key => !translations[i][key]);
+
+            const translationKeyInOtherLanguageDoesNotAlreadyExist = key => !translations[i][key]
+
+            const keys = Object.keys(defaultLocaleMessages).filter(translationKeyInOtherLanguageDoesNotAlreadyExist);
+
+            const messagesToTranslate = keys.map(x => defaultLocaleMessages[x].message)
             if (keys.length > 0) {
-                (await translate(keys.map(x =>
-                defaultLocaleMessages[x].message), defaultLocale, locales[i]
-                )).forEach((message, j) => {
-                    translations[i][keys[j]] = { message };
+                const translatedMessages = await translate(messagesToTranslate, defaultLocale, locales[i])
+                translatedMessages.forEach((message, j) => {
+                    const key = keys[j]
+                    translations[i][key].message = message
                 });
             }
         }
