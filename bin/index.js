@@ -44,29 +44,32 @@ program
         for (let i = 0; i < translations.length; i++) {
             const locale = locales[i];
             translations[i] = {};
-
-            Object.keys(defaultLocaleMessages).forEach(key => {
-                translations[i][key] = { ...defaultLocaleMessages[key] }
-            })
             
             if (fs.existsSync(path.join(dir, '_locales', locale, 'messages.json'))) {
                 const messages =  JSON.parse(fs.readFileSync(path.join(dir, '_locales', locale, 'messages.json')));
                 Object.keys(messages).forEach(key => {
-                    translations[i][key].message = messages[key].message;
+                    translations[i][key] = messages[key];
                 });
             }
 
             const translationKeyInOtherLanguageDoesNotAlreadyExist = key => !translations[i][key]
 
-            const keys = Object.keys(defaultLocaleMessages).filter(translationKeyInOtherLanguageDoesNotAlreadyExist);
+            const keysThatExistInDefaultLocaleButNotInTranslation = Object.keys(defaultLocaleMessages).filter(translationKeyInOtherLanguageDoesNotAlreadyExist);
 
-            const messagesToTranslate = keys.map(x => defaultLocaleMessages[x].message)
-            if (keys.length > 0) {
+            const messagesToTranslate = keysThatExistInDefaultLocaleButNotInTranslation.map(x => defaultLocaleMessages[x].message)
+            if (keysThatExistInDefaultLocaleButNotInTranslation.length > 0) {
                 const translatedMessages = await translate(messagesToTranslate, defaultLocale, locales[i])
                 translatedMessages.forEach((message, j) => {
-                    const key = keys[j]
+                    const key = keysThatExistInDefaultLocaleButNotInTranslation[j]
+                    translations[i][key] = Object.assign({}, defaultLocaleMessages[key])
                     translations[i][key].message = message
                 });
+            }
+
+            const keysThatDoNotExistInDefaultLocaleButDoInTranslation = Object.keys(defaultLocaleMessages).filter(x => !translationKeyInOtherLanguageDoesNotAlreadyExist(x))
+
+            for (const key of keysThatDoNotExistInDefaultLocaleButDoInTranslation) {
+                delete translations[i][key]
             }
         }
 
